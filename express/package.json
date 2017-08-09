@@ -1,0 +1,17 @@
+{
+  "name": "express_course",
+  "version": "1.0.0",
+  "description": "Express crash course",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "body-parser": "*",
+    "ejs": "^2.5.7",
+    "express": "*",
+    "nunjucks": "^3.0.1"
+  },
+  "author": "LP",
+  "license": "ISC"
+}
