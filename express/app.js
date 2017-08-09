@@ -1,21 +1,20 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var path = require('path');
+var express = require('express')
+    ,bodyParser = require('body-parser')
+    ,path = require('path')
+    ,nunjucks = require('nunjucks')
+    ,engines = require('consolidate');
 
 var app = express();
 
-//Middleware - pretty much full control over what is ran here
-/*
-var logger = function(req,res,next){
-    console.log('Logging...')
-    next();
-}
+nunjucks.configure('views', {
+    autoescape: true,
+    express: app
+});
 
-app.use(logger);
-*/
 
-//view engine
-app.set('view engine','ejs');
+//view engine - add .njk extension to be used in templates with html files.
+app.engine('njk', engines.nunjucks);
+app.set('view engine', 'html');
 app.set('views',path.join(__dirname,'views'));
 
 //body parser middleware
@@ -47,18 +46,14 @@ var people = [
 
 //homepage represented by '/'
 app.get('/', function(req,res){
-//    res.send('Hello');
-//    res.json(person);
-//    res.json(people);
-    res.render('index',{
-        title:'Customers'
+    res.render('index.html',{
+        title:'Nunjucks'
     });
 });
 
 app.listen(3000, function(){
     console.log('Server started on port 3000');
 });
-
 
 
 /*

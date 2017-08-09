@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "body-parser": "*",
+    "consolidate": "^0.14.5",
     "ejs": "^2.5.7",
     "express": "*",
     "nunjucks": "^3.0.1"
