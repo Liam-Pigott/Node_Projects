@@ -11,6 +11,8 @@
     "consolidate": "^0.14.5",
     "ejs": "^2.5.7",
     "express": "*",
+    "express-validator": "^3.2.1",
+    "mongojs": "^2.4.1",
     "nunjucks": "^3.0.1"
   },
   "author": "LP",
