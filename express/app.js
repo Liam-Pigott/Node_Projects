@@ -7,6 +7,7 @@ var express = require('express')
     ,mongoJS = require('mongojs');
 
 var db = mongoJS('customerapp', ['users']);
+var ObjectId = mongoJS.ObjectId;
 
 var app = express();
 
@@ -85,12 +86,15 @@ var users = [
 
 //homepage represented by '/'
 app.get('/', function(req,res){
-    res.render('index.html',{
-        title: 'Nunjucks',
-        users: users
+    db.users.find(function (err, docs) {
+        res.render('index.html',{
+            title: 'Nunjucks',
+            users: docs
+        });
     });
 });
 
+//after form submit, use express validator to check the form values are valid
 app.post('/users/add', function(req,res){
 
     req.checkBody('first_name','First Name is Required').notEmpty();
@@ -111,8 +115,22 @@ app.post('/users/add', function(req,res){
                 last_name: req.body.last_name,
                 email: req.body.email
             }
-            console.log('SUCCESS');
+            db.users.insert(newUser,function(err,result){
+                if(err){
+                    console.log(err);
+                }
+                res.redirect('/');
+            });
         }
+    });
+});
+
+app.delete('/users/delete/:id',function(req,res){
+    db.users.remove({_id: ObjectId(req.params.id)},function(err,result){
+        if(err){
+            console.log(err);
+        }
+        res.redirect('/');
     });
 });
 
