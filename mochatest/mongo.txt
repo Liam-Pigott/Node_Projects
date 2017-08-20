@@ -1,0 +1,181 @@
+//create admin acc
+db.createUser({
+    user:"Liam",
+    pwd:"1234",
+    roles:["readWrite","dbAdmin"]
+})
+
+//collection is basically a table
+db.createCollection('customers');
+
+//insert into customers collection
+db.customers.insert({
+    first_name:"John",
+    last_name:"Doe"
+})
+
+//show collection
+db.customers.find()
+
+//insert
+db.customers.insert([
+    {     
+        first_name:"Ben",
+        last_name:"Smith" 
+    },
+    {
+        first_name:"Jaon",
+        last_name:"Simpson",
+        gender:"female"
+    }
+])
+
+//pretty print
+db.customers.find().pretty()
+
+//update (param1 = criteria to match,param2 = replace with)
+db.customers.update(
+    {
+        first_name:"John"
+    },
+    {
+        first_name:"John",
+        last_name:"Doe",
+        gender:"male"
+    }
+)
+
+//using $set so we don't have to update every field
+db.customers.update(
+    {
+        first_name:"Ben"
+    },
+    {
+        $set:{gender:"male"}
+    }
+)
+
+db.customers.update(
+    {
+        first_name:"Ben"
+    },
+    {
+        $set:{
+            age:45
+        }
+    }
+)
+
+//can increment values using $inc i.e. bens age was 45 above
+//after running this query bens age will be 50
+db.customers.update(
+    {
+        first_name:"Ben"
+    },
+    {
+        $inc:{
+            age:5
+        }
+    }
+)
+
+//can remove values using $unset e.g.
+db.customers.update(
+    {
+        first_name:"Ben"
+    },
+    {
+        $unset:{
+            age:1
+        }
+    }
+)
+
+//if we criteria isn't matched in the first param but we want
+//to create a new entry if not found, use upsert
+db.customers.update(
+    {
+        first_name:"Liam"
+    },
+    {
+        first_name:"Liam",
+        last_name:"Pigott"
+    },
+    {
+        upsert:true
+    }
+)
+
+//can update field names using $rename
+db.customers.update(
+    {
+        first_name:"John"
+    },
+    {
+        $rename:{
+            gender:"sex"
+        }
+    }
+)
+
+//simple delete
+db.customers.remove({first_name:"Ben"})
+
+//simple find
+db.customers.find({first_name:"Liam"})
+
+//find based on multiple values, $or & $and
+db.customers.find({$or:[{first_name:"Liam"},{first_name:"Jaon"}]})
+
+//find using standard operators i.e. lt,gt,gte,lte
+db.customers.find({age:{$gt:30}})
+
+db.customers.update(
+    {
+        first_name:"John"
+    },
+    {
+        $set:{
+            address:{
+                city:"Berlin",
+                country:"Germany"
+            }
+        }
+    }
+)
+
+//when we need to find based on values in a nested object, use dot notation
+//THESE MUST BE WRAPPED IN QUOTES i.e. "address.city"
+db.customers.find({
+    "address.city":"London"
+})
+
+db.customers.updateMany(
+    {
+
+    },
+    {
+        $set:{
+            memberships:[
+                "mem1",
+                "mem2"
+            ]
+        }
+    }
+)
+
+//when filtering an array, just specify the array name and the value being looked for
+//the following returns all customers with 'mem1' in the memberships array.
+db.customers.find({memberships:"mem1"})
+
+//sorting, asc=1, desc= -1
+db.customers.find().sort({last_name:1})
+
+//can also count/limit
+db.customers.find({gender:"male"}).count()
+db.customers.find().limit(4)
+
+//can also print use foreach similar to groovy/js
+db.customers.find().forEach(function(doc){
+    print("Customer Name: " + doc.first_name)
+})
