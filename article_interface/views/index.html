@@ -3,9 +3,13 @@
 {% block content %}
     <h1>content block from index</h1>
     {% if articles %}
-        <ul>
+        <ul class="list-group">
             {% for article in articles %}
-                <li>{{article.title}}</li>
+                <li class="list-group-item">
+                    <a href="/articles/{{article._id}}">
+                        {{article.title}}
+                    </a>
+                </li>
             {% endfor %}
         </ul>
     {% endif %}

@@ -1,12 +1,35 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>ArticleBase</title>
-  </head>
-  <body>
+
+<head>
+  <meta charset="UTF-8">
+  <title>ArticleBase</title>
+  <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+</head>
+
+<body>
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+        <a class="navbar-brand" href="#">Article Base</a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+          <li><a href="/">Home</a></li>
+          <li><a href="/articles/add">Add Article</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="container">
     {% block content %}
-      <!--<h1>{{title}}</h1>-->
+    <!--<h1>{{title}}</h1>-->
     {% endblock %}
     <br>
     <hr>
@@ -15,5 +38,9 @@
         Copyright &copy; 2017
       </p>
     </footer>
-  </body>
+  </div>
+  <script src="/bower_components/jquery/dist/jquery.min.js"></script>
+  <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+</body>
+
 </html>

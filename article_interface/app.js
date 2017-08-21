@@ -3,7 +3,11 @@ const express = require('express'),
     nunjucks = require('nunjucks'),
     engines = require('consolidate'),
     mongoose = require('mongoose'),
-    bodyParser = require('body-parser');
+    bodyParser = require('body-parser'),
+    session = require('express-session'),
+    expressValidator = require('express-validator'),
+    flash = require('connect-flash'),
+    messages = require('express-messages');
 
 mongoose.connect('mongodb://localhost/nodekb',{
     useMongoClient: true
@@ -43,6 +47,42 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
+//set public folder
+app.use(express.static(path.join(__dirname,'public')));
+
+//Express session middleware
+app.use(session({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true }
+}));
+
+//Express messages middleware
+app.use(require('connect-flash')());
+app.use(function (req, res, next) {
+  res.locals.messages = require('express-messages')(req, res);
+  next();
+});
+
+//Express validator middleware
+app.use(expressValidator({
+    errorFormatter: function(param, msg, value) {
+        var namespace = param.split('.')
+        , root    = namespace.shift()
+        , formParam = root;
+  
+      while(namespace.length) {
+        formParam += '[' + namespace.shift() + ']';
+      }
+      return {
+        param : formParam,
+        msg   : msg,
+        value : value
+      };
+    }
+  }));
+
 //home route
 app.get('/', function(req,res){
     Article.find({},function(err,articles){
@@ -55,6 +95,15 @@ app.get('/', function(req,res){
                 articles:articles
             });
         }
+    });
+});
+
+//get single article - ':' is a placeholder
+app.get('/articles/:id', function(req,res){
+    Article.findById(req.params.id, function(err,article){
+        res.render('article.njk',{
+            article:article
+        });
     });
 });
 
