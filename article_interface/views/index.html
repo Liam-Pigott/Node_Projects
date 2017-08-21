@@ -1,0 +1,12 @@
+{% extends "layout.njk" %}
+
+{% block content %}
+    <h1>content block from index</h1>
+    {% if articles %}
+        <ul>
+            {% for article in articles %}
+                <li>{{article.title}}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}
