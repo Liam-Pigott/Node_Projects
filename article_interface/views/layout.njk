@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <title>ArticleBase</title>
   <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body>
@@ -28,6 +29,11 @@
     </div>
   </nav>
   <div class="container">
+    {% if errors %}
+      {% for error in errors %}
+        <div class="alert alert-danger">{{error.msg}}</div>
+      {% endfor %}
+    {% endif %}
     {% block content %}
     <!--<h1>{{title}}</h1>-->
     {% endblock %}
@@ -41,6 +47,7 @@
   </div>
   <script src="/bower_components/jquery/dist/jquery.min.js"></script>
   <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="/js/main.js"></script>
 </body>
 
 </html>

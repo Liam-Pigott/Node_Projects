@@ -56,8 +56,8 @@ app.use(express.static(path.join(__dirname,'public')));
 app.use(cookieParser())
 app.use(session({
   secret: 'keyboard cat',
-  resave: true,
-  saveUninitialized: true,
+  resave: false,
+  saveUninitialized: false,
   cookie: { maxAge: 60000 }
 }))
 
@@ -103,44 +103,10 @@ app.get('/', function(req,res){
     });
 });
 
-//get single article - ':' is a placeholder
-app.get('/article/:id', function(req,res){
-    Article.findById(req.params.id, function(err,article){
-        res.render('article.njk',{
-            article:article
-        });
-    });
-});
-
-//add article route
-app.get('/articles/add',function(req,res){
-    res.render('add_article.njk',{
-        title:"Add Article"
-    })
-});
-
-//handle add article submit
-app.post('/articles/add',function(req,res){
-    let article = new Article();
-    article.title = req.body.title;
-    article.author = req.body.author;
-    article.body = req.body.body;
-
-    article.save(function(err){
-        if(err){
-            console.log(err);
-            return;
-        }
-        else{
-            req.session.messages = {
-                key: 'status',
-                type:'success',
-                message: 'Article created successfully!'
-            }
-            res.redirect('/');
-        }
-    });
-});
+//Route files
+let articles = require('./routes/articles.js');
+//anything that navs to /articles, go through routes in articles file
+app.use('/articles',articles);
 
 //start server
 app.listen(3000,function(){

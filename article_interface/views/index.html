@@ -1,7 +1,7 @@
 {% extends "layout.njk" %}
 
 {% block content %}
-    <h1>content block from index</h1>
+    <h1>{{title}}</h1>
     {% if message %}
         {% include "message.njk" %}
     {% endif %}
@@ -9,7 +9,7 @@
         <ul class="list-group">
             {% for article in articles %}
                 <li class="list-group-item">
-                    <a href="/article/{{article._id}}">
+                    <a href="/articles/{{article._id}}">
                         {{article.title}}
                     </a>
                 </li>
