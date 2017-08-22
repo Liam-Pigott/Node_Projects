@@ -2,11 +2,14 @@
 
 {% block content %}
     <h1>content block from index</h1>
+    {% if message %}
+        {% include "message.njk" %}
+    {% endif %}
     {% if articles %}
         <ul class="list-group">
             {% for article in articles %}
                 <li class="list-group-item">
-                    <a href="/articles/{{article._id}}">
+                    <a href="/article/{{article._id}}">
                         {{article.title}}
                     </a>
                 </li>

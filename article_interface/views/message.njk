@@ -1,7 +1,3 @@
 <div class="messages">
-    {% for type in Object.keys(messages) %}
-        {% for message in messages[type] %}
-            <div class="alert alert{{type}}"></div>
-        {% endfor %}
-    {% endfor %}
+    <div class="alert alert-{{message.type}}">{{message.message}}</div>
 </div>

@@ -6,8 +6,8 @@ const express = require('express'),
     bodyParser = require('body-parser'),
     session = require('express-session'),
     expressValidator = require('express-validator'),
-    flash = require('connect-flash'),
-    messages = require('express-messages');
+    flash = require('express-flash'),
+    cookieParser = require('cookie-parser');
 
 mongoose.connect('mongodb://localhost/nodekb',{
     useMongoClient: true
@@ -33,7 +33,9 @@ let Article = require('./models/article');
 //configure view engine
 nunjucks.configure('views', {
     autoescape: true,
-    express: app
+    noCache: true,
+    express: app,
+    watch:true
 });
 
 //view engine - add .njk extension to be used in templates with html files.
@@ -51,18 +53,20 @@ app.use(bodyParser.json())
 app.use(express.static(path.join(__dirname,'public')));
 
 //Express session middleware
+app.use(cookieParser())
 app.use(session({
-    secret: 'keyboard cat',
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: true }
-}));
+  secret: 'keyboard cat',
+  resave: true,
+  saveUninitialized: true,
+  cookie: { maxAge: 60000 }
+}))
 
-//Express messages middleware
-app.use(require('connect-flash')());
-app.use(function (req, res, next) {
-  res.locals.messages = require('express-messages')(req, res);
-  next();
+app.use(flash());
+
+app.use(function(req, res, next) {
+    res.locals.messages = req.session.messages;
+    delete req.session.messages;
+    next();
 });
 
 //Express validator middleware
@@ -92,14 +96,15 @@ app.get('/', function(req,res){
         else{
             res.render('index.html',{
                 title:"Articles",
-                articles:articles
+                articles:articles,
+                message:res.locals.messages
             });
         }
     });
 });
 
 //get single article - ':' is a placeholder
-app.get('/articles/:id', function(req,res){
+app.get('/article/:id', function(req,res){
     Article.findById(req.params.id, function(err,article){
         res.render('article.njk',{
             article:article
@@ -127,6 +132,11 @@ app.post('/articles/add',function(req,res){
             return;
         }
         else{
+            req.session.messages = {
+                key: 'status',
+                type:'success',
+                message: 'Article created successfully!'
+            }
             res.redirect('/');
         }
     });
@@ -136,3 +146,5 @@ app.post('/articles/add',function(req,res){
 app.listen(3000,function(){
     console.log('Server started on port 3000');
 });
+
+module.exports = app;
