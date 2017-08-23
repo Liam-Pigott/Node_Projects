@@ -29,7 +29,7 @@ router.post('/add',function(req,res){
     else{
         let article = new Article();
         article.title = req.body.title;
-        article.author = req.body.author;
+        article.author = res.locals.user._id;
         article.body = req.body.body;
     
         article.save(function(err){
@@ -42,7 +42,7 @@ router.post('/add',function(req,res){
                     key: 'status',
                     type:'success',
                     message: 'Article created successfully!'
-                }
+                };
                 res.redirect('/');
             }
         });
@@ -67,7 +67,7 @@ router.post('/edit/:id',function(req,res){
     article.author = req.body.author;
     article.body = req.body.body;
 
-    let query = {_id:req.params.id}
+    let query = {_id:req.params.id};
 
     Article.update(query,article,function(err){
         if(err){
