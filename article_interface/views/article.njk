@@ -2,13 +2,17 @@
 
 {% block content %}
     <h1>{{article.title}}</h1>
-    <h5>Written by: {{article.author}}</h5>
+    <h5>Written by: {{author}}</h5>
     <p>{{article.body}}</p>
     <hr>
-    <a class="btn btn-default" href="/articles/edit/{{article._id}}">
-        Edit
-    </a>
-    <a class="btn btn-danger delete-article" href="#" data-id="{{article._id}}">
-        Delete
-    </a>
+    {% if user %}
+        {% if user._id == article.author %}
+            <a class="btn btn-default" href="/articles/edit/{{article._id}}">
+                Edit
+            </a>
+            <a class="btn btn-danger delete-article" href="#" data-id="{{article._id}}">
+                Delete
+            </a>
+        {% endif %}
+    {% endif %}
 {% endblock %}
