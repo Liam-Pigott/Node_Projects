@@ -3,9 +3,10 @@ const express = require('express'),
 
 //bring in models
 let Article = require('../models/article');
+let User = require('../models/user');
 
 //add article route
-router.get('/add',function(req,res){
+router.get('/add', ensureAuthenticated,function(req,res){
     res.render('add_article.njk',{
         title:"Add Article"
     })
@@ -14,7 +15,7 @@ router.get('/add',function(req,res){
 //handle add article submit
 router.post('/add',function(req,res){
     req.checkBody('title','Title is required!').notEmpty();
-    req.checkBody('author','Author is required!').notEmpty();
+    // req.checkBody('author','Author is required!').notEmpty();
     req.checkBody('body','Body is required!').notEmpty();
 
     //get errors
@@ -50,12 +51,22 @@ router.post('/add',function(req,res){
 });
 
 //load edit form
-router.get('/edit/:id', function(req,res){
+router.get('/edit/:id', ensureAuthenticated, function(req,res){
     Article.findById(req.params.id, function(err,article){
-        res.render('edit_article.njk',{
-            title:'Edit Article',
-            article:article
-        });
+        if(article.author != req.user._id){
+            req.session.messages = {
+                key: 'status',
+                type:'danger',
+                message: 'Not Authorized!'
+            }
+            res.redirect('/');
+        }
+        else{
+            res.render('edit_article.njk',{
+                title:'Edit Article',
+                article:article
+            });
+        }
     });
 });
 
@@ -87,30 +98,58 @@ router.post('/edit/:id',function(req,res){
 
 //get single article - ':' is a placeholder
 router.get('/:id', function(req,res){
-    Article.findById(req.params.id, function(err,article){
-        res.render('article.njk',{
-            article:article
+    Article.findById(req.params.id, function(err, article){
+        User.findById(article.author, function(err, user) {
+            res.render('article.njk',{
+                article: article,
+                user: res.locals.user
+            });
         });
     });
 });
 
 //fired by the ajax request in main.js - using ajax is more secure than GET then delete
 router.delete('/:id',function(req,res){
-    let query = {_id:req.params.id}
+    if(!req.user._id){
+        res.status(500).send();
+    }
+    let query = {_id:req.params.id};
 
-    //delete from Article mongoose schema
-    Article.remove(query,function(err){
-        if(err){
-            console.log(err);
+    Article.findById(req.params.id, function(err, article) {
+        if(article.author != req.user._id){
+            res.status(500).send();
         }
+        else{
+            //delete from Article mongoose schema
+            Article.remove(query,function(err){
+                if(err){
+                    console.log(err);
+                }
+                req.session.messages = {
+                    key: 'status',
+                    type:'danger',
+                    message: 'Article deleted!'
+                }
+                //sends 200 by default
+                res.send('Success');
+            });
+        }
+    });
+});
+
+//Access control
+function ensureAuthenticated(req, res, next){
+    if(req.isAuthenticated()){
+        return next();
+    }
+    else{
         req.session.messages = {
             key: 'status',
             type:'danger',
-            message: 'Article deleted!'
-        }
-        //sends 200 by default
-        res.send('Success');
-    });
-});
+            message: 'Please login!'
+        };
+        res.redirect('/users/login');
+    }
+}
 
 module.exports = router;

@@ -100,7 +100,7 @@ app.use(passport.session());
 app.get('/', function(req,res){
     Article.find({},function(err,articles){
         if(err){
-            console.log(err)
+            console.log(err);
         }
         else{
             res.render('index.html',{
